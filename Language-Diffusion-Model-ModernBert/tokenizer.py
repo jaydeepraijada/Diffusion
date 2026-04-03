@@ -86,8 +86,8 @@ def test_tokenizer():
                                             tokenize = True, 
                                             add_special_tokens = True, 
                                             add_generation_prompt = True # This will add <START_ID>assistant<END_ID> 
-                                                                         #at the end of the sequence to prompt the model 
-                                                                          #to generate a response
+                                                                         # at the end of the sequence to prompt the model 
+                                                                         # to generate a response
                                             )
     
 

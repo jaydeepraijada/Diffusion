@@ -9,8 +9,8 @@ accelerate launch --mixed_precision bf16 pretrain.py \
     --hf_model_name "answerdotai/ModernBERT-base" \
     --path_to_prepped_data "/workspace/data/pretrain" \
     --num_training_steps 100000 \
-    --per_gpu_batch_size 64 \
-    --gradient_accumulation_steps 2 \
+    --per_gpu_batch_size 128 \
+    --gradient_accumulation_steps 1 \
     --learning_rate 5e-5 \
     --weight_decay 0.01 \
     --lr_scheduler_type cosine \

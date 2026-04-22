@@ -10,8 +10,8 @@ accelerate launch --mixed_precision bf16 sft_trainer.py \
     --path_to_pretrained_checkpoint "/workspace/experiments/LDM_pretrain_base/final_model/model.safetensors" \
     --path_to_prepped_data "/workspace/data/sft" \
     --num_training_steps 30000 \
-    --per_gpu_batch_size 32 \
-    --gradient_accumulation_steps 2 \
+    --per_gpu_batch_size 64 \
+    --gradient_accumulation_steps 1 \
     --learning_rate 1e-5 \
     --weight_decay 0.05 \
     --lr_scheduler_type cosine \

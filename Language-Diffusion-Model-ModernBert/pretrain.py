@@ -9,7 +9,6 @@ from datasets import load_from_disk
 from accelerate import Accelerator
 from tqdm import tqdm
 from tokenizer import get_tokenizer
-import bitsandbytes as bnb
 
 
 def parse_args():
@@ -344,7 +343,7 @@ while train:
                 log["val_loss"] = log["val_loss"] / num_losses
 
                 ## Print to Console ###
-                logging_string = f"[{completed_steps}/{args.num_training_steps}] Validation Loss: {log["val_loss"]}"
+                logging_string = f"[{completed_steps}/{args.num_training_steps}] Validation Loss: {log['val_loss']}"
         
                 ### Print out Log ###
                 if accelerator.is_main_process:

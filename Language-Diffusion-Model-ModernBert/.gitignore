@@ -12,12 +12,24 @@ data/
 *.arrow
 *.bin
 
+# Experiment outputs / checkpoints
+work_dir/
+experiments/
+
+# Safetensors weights
+*.safetensors
+
 # VS Code
 .vscode/
 
 # Environment
 venv/
 .env/
+
+# Generated outputs
+*.gif
+test_data/
+test_experiments/
 
 # OS files
 .DS_Store

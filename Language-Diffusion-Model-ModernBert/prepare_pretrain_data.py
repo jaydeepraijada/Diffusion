@@ -62,9 +62,22 @@ parser.add_argument(
 )
 
 parser.add_argument(
+    "--tinystories",
+    action="store_true",
+    help="Use roneneldan/TinyStories (small shards, fast download — good for local testing)"
+)
+
+parser.add_argument(
     "--batch_size",
-    type=int, 
+    type=int,
     default=1000
+)
+
+parser.add_argument(
+    "--max_samples",
+    type=int,
+    default=None,
+    help="Truncate dataset to this many samples (useful for local testing)"
 )
 
 def prepare_data(args):
@@ -77,7 +90,16 @@ def prepare_data(args):
     tokenizer = get_tokenizer(args.hf_model_name)
 
     ### Load Datasets ###
-    if args.large_dataset:
+    if args.tinystories:
+
+        split = f"train[:{args.max_samples}]" if args.max_samples is not None else "train"
+        dataset = load_dataset("roneneldan/TinyStories",
+                               split=split,
+                               cache_dir=cache_dir,
+                               num_proc=args.num_workers)
+        dataset = dataset.remove_columns([col for col in dataset.column_names if col != "text"])
+
+    elif args.large_dataset:
         fw = load_dataset("HuggingFaceFW/fineweb", 
                         name="sample-10BT", 
                         split="train", 
@@ -106,9 +128,10 @@ def prepare_data(args):
 
     else:
 
-        dataset = load_dataset("manu/project_gutenberg", 
-                               split="en",
-                               cache_dir=cache_dir, 
+        split = f"en[:{args.max_samples}]" if args.max_samples is not None else "en"
+        dataset = load_dataset("manu/project_gutenberg",
+                               split=split,
+                               cache_dir=cache_dir,
                                num_proc=args.num_workers)
         dataset = dataset.remove_columns([col for col in dataset.column_names if col != "text"])
 

@@ -370,7 +370,7 @@ while train:
                 log["val_loss"] = log["val_loss"] / num_losses
 
                 ## Print to Console ###
-                logging_string = f"[{completed_steps}/{args.num_training_steps}] Validation Loss: {log["val_loss"]}"
+                logging_string = f"[{completed_steps}/{args.num_training_steps}] Validation Loss: {log['val_loss']}"
         
                 ### Print out Log ###
                 if accelerator.is_main_process:

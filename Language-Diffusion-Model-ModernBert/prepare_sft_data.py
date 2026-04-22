@@ -52,8 +52,15 @@ parser.add_argument(
 parser.add_argument(
     "--hf_model_name",
     default="answerdotai/ModernBERT-base",
-    help="Name of model so we can use the huggingface tokenizer", 
+    help="Name of model so we can use the huggingface tokenizer",
     type=str
+)
+
+parser.add_argument(
+    "--max_samples",
+    type=int,
+    default=None,
+    help="Truncate dataset to this many samples (useful for local testing)"
 )
 
 def prepare_data(args):
@@ -71,9 +78,10 @@ def prepare_data(args):
     tokenizer = get_tokenizer(args.hf_model_name)
 
     ### Load Datasets ###
-    dataset = load_dataset("Open-Orca/OpenOrca", # "tatsu-lab/alpaca", 
-                           split="train", 
-                           num_proc=args.num_workers, 
+    split = f"train[:{args.max_samples}]" if args.max_samples is not None else "train"
+    dataset = load_dataset("Open-Orca/OpenOrca",
+                           split=split,
+                           num_proc=args.num_workers,
                            cache_dir=cache_dir)
     
     def apply_chat_template(query, response):

@@ -1,0 +1,12 @@
+torch
+transformers
+accelerate
+tokenizers
+safetensors
+datasets
+wandb
+tqdm
+rich
+gradio
+Pillow
+huggingface_hub

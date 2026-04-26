@@ -9,6 +9,7 @@ from datasets import load_from_disk
 from accelerate import Accelerator
 from tqdm import tqdm
 from tokenizer import get_tokenizer
+from huggingface_hub import HfApi
 
 
 def parse_args():
@@ -140,12 +141,31 @@ def parse_args():
     #############################
     ### LOGGING CONFIGURATION ###
     #############################
-    
+
     parser.add_argument(
-        "--log_wandb", 
+        "--log_wandb",
         help="Flag to enable logging to wandb",
-        default=False, 
+        default=False,
         action=argparse.BooleanOptionalAction
+    )
+
+    ############################
+    ### HUGGINGFACE HUB PUSH ###
+    ############################
+
+    parser.add_argument(
+        "--hf_push_repo",
+        default=None,
+        help="HF Hub repo id (e.g. username/my-model) to push checkpoints to. "
+             "Set HF_TOKEN env var or pass --hf_token.",
+        type=str
+    )
+
+    parser.add_argument(
+        "--hf_token",
+        default=None,
+        help="HuggingFace token. Falls back to HF_TOKEN env var if not provided.",
+        type=str
     )
 
     args = parser.parse_args()
@@ -161,6 +181,14 @@ accelerator = Accelerator(project_dir=path_to_experiment,
                           log_with="wandb" if args.log_wandb else None)
 if args.log_wandb:
     accelerator.init_trackers(args.experiment_name)
+
+hf_api = None
+if args.hf_push_repo:
+    hf_token = args.hf_token or os.environ.get("HF_TOKEN")
+    hf_api = HfApi(token=hf_token)
+    if accelerator.is_main_process:
+        hf_api.create_repo(args.hf_push_repo, repo_type="model", exist_ok=True)
+        accelerator.print(f"HF push enabled → {args.hf_push_repo}")
 
 
 ### Get Tokenizer ###
@@ -357,7 +385,7 @@ while train:
             ### Checkpoint Model (Only need main process for this) ###
             if (completed_steps % args.checkpoint_interval == 0):
                 
-                ### Save Checkpoint ### 
+                ### Save Checkpoint ###
                 path_to_checkpoint = os.path.join(path_to_experiment, f"checkpoint_{completed_steps}")
 
                 if accelerator.is_main_process:
@@ -369,6 +397,17 @@ while train:
                 ### Save checkpoint using only the main process ###
                 if accelerator.is_main_process:
                     accelerator.save_state(output_dir=path_to_checkpoint)
+
+                ### Push checkpoint to HF Hub ###
+                if accelerator.is_main_process and hf_api is not None:
+                    progress_bar.write(f"Pushing checkpoint_{completed_steps} to {args.hf_push_repo} ...")
+                    hf_api.upload_folder(
+                        folder_path=path_to_checkpoint,
+                        repo_id=args.hf_push_repo,
+                        path_in_repo=f"checkpoint_{completed_steps}",
+                        commit_message=f"Checkpoint at step {completed_steps}",
+                    )
+                    progress_bar.write("Push complete.")
             
             if completed_steps >= args.num_training_steps:
                 train = False
@@ -383,8 +422,19 @@ while train:
             ### Reset Loss Accumulate For Next Accumulation ###
             accumulate_loss = 0
 
-path_to_checkpoint = os.path.join(path_to_experiment, f"final_model")
-accelerator.save_state(output_dir=path_to_checkpoint)
+path_to_final = os.path.join(path_to_experiment, "final_model")
+accelerator.save_state(output_dir=path_to_final)
+
+if accelerator.is_main_process and hf_api is not None:
+    accelerator.print(f"Pushing final model to {args.hf_push_repo} ...")
+    hf_api.upload_folder(
+        folder_path=path_to_final,
+        repo_id=args.hf_push_repo,
+        path_in_repo="final_model",
+        commit_message="Final model",
+    )
+    accelerator.print("Final model pushed.")
+
 accelerator.end_training()
 
             

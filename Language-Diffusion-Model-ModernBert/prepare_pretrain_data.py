@@ -1,3 +1,5 @@
+import os
+import shutil
 from datasets import load_dataset, load_from_disk, concatenate_datasets
 import time
 import argparse
@@ -172,7 +174,6 @@ def prepare_data(args):
     tokenized_data.save_to_disk(path_to_save)
 
     ### Clean up raw HF dataset cache to free disk space ###
-    import shutil
     hf_datasets_cache = os.path.join(cache_dir, "datasets") if cache_dir else None
     if hf_datasets_cache and os.path.exists(hf_datasets_cache):
         print(f"Cleaning up HF dataset cache: {hf_datasets_cache}")

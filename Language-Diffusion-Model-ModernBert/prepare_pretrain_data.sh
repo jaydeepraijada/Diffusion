@@ -10,6 +10,6 @@ python prepare_pretrain_data.py \
     --path_to_data_store /workspace/data/pretrain \
     --huggingface_cache_dir /workspace/hf_cache \
     --dataset_split_seed 42 \
-    --num_workers 8 \
+    --num_workers 1 \
     --hf_model_name "answerdotai/ModernBERT-base"
     # --large_dataset   # uncomment for FineWeb + FineWeb-Edu + Wikipedia

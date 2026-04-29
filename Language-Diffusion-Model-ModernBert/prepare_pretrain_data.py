@@ -158,17 +158,26 @@ def prepare_data(args):
         
         return {"input_ids": input_ids_list}
     
+    num_proc = args.num_workers if args.num_workers > 1 else None
     tokenized_data = dataset.map(
-        compute_tokens, 
-        batched=True, 
+        compute_tokens,
+        batched=True,
         batch_size=args.batch_size,
-        num_proc=args.num_workers, 
+        num_proc=num_proc,
         remove_columns="text"
     )
 
     ### Save Data ###
     print("Saving to:", path_to_save)
     tokenized_data.save_to_disk(path_to_save)
+
+    ### Clean up raw HF dataset cache to free disk space ###
+    import shutil
+    hf_datasets_cache = os.path.join(cache_dir, "datasets") if cache_dir else None
+    if hf_datasets_cache and os.path.exists(hf_datasets_cache):
+        print(f"Cleaning up HF dataset cache: {hf_datasets_cache}")
+        shutil.rmtree(hf_datasets_cache)
+        print("Cache cleaned.")
 
 
 if __name__ == "__main__":

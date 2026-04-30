@@ -242,8 +242,18 @@ model, optimizer, train_dataloader, eval_dataloader, scheduler = accelerator.pre
     model, optimizer, train_dataloader, eval_dataloader, scheduler
 ) #prepare everything for accelerator (handles multi gpu, mixed precision, etc)
 
-train = True
+### Resume from latest checkpoint if available ###
 completed_steps = 0
+latest_checkpoint = None
+if os.path.isdir(path_to_experiment):
+    checkpoints = [d for d in os.listdir(path_to_experiment) if d.startswith("checkpoint_")]
+    if checkpoints:
+        latest_checkpoint = os.path.join(path_to_experiment, sorted(checkpoints, key=lambda x: int(x.split("_")[1]))[-1])
+        completed_steps = int(latest_checkpoint.split("_")[-1]) + 1
+        accelerator.load_state(latest_checkpoint)
+        accelerator.print(f"Resumed from {latest_checkpoint} at step {completed_steps}")
+
+train = True
 progress_bar = tqdm(range(completed_steps, args.num_training_steps), disable=not accelerator.is_local_main_process) #disable progress bar for non main processes
 
 while train:

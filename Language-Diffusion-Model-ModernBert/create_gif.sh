@@ -6,7 +6,7 @@
 python create_gif.py \
     --safetensors_path "/workspace/experiments/LDM_sft_openorca/final_model/model.safetensors" \
     --hf_model_name "answerdotai/ModernBERT-base" \
-    --prompt "What is the meaning of life?" \
+    --prompt "Who wrote Romeo and Juliet?" \
     --seq_len 64 \
     --num_steps 64 \
     --strategy low_confidence \

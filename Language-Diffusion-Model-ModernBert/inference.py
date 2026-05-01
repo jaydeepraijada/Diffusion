@@ -117,11 +117,17 @@ def inference(input_tokens,
         ### Get Timesteps for Inference ###
         times = torch.linspace(1, 0, num_steps + 1, device=device)
 
+        eos_id = tokenizer.eos_token_id
+
         with Live("", refresh_per_second=5, console=console) as live:
             for t, s in zip(times[:-1], times[1:]):
 
                 ### Compute Logits ###
                 logits = model(input_tokens, attention_mask=attention_mask).logits
+
+                ### Block EOS during generation ###
+                if eos_id is not None:
+                    logits[:, :, eos_id] = float("-inf")
 
                 ### Sample Gen Token from Masked Tokens ###
                 probs = torch.softmax(logits[mask], dim=-1)

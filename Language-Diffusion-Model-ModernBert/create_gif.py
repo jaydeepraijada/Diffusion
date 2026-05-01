@@ -98,8 +98,14 @@ def run_and_collect_frames(input_tokens, mask, attention_mask,
     frames = []
     times  = torch.linspace(1, 0, num_steps + 1, device=device)
 
+    eos_id = tokenizer.eos_token_id
+
     for i, (t, s) in enumerate(zip(times[:-1], times[1:])):
         logits = model(input_tokens, attention_mask=attention_mask).logits
+
+        # Block EOS during generation so it doesn't dominate every position
+        if eos_id is not None:
+            logits[:, :, eos_id] = float("-inf")
 
         probs = torch.softmax(logits[mask], dim=-1)
         input_tokens[mask] = torch.multinomial(probs, num_samples=1).squeeze(-1)

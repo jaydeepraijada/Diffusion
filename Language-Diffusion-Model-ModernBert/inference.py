@@ -50,6 +50,9 @@ def prepare_conditional_tokens_for_inference(seq_len, tokenizer, prompt, device=
         add_generation_prompt=True
     )
     tokenized = tokenizer.encode(chat_str)
+    # Strip trailing EOS — it belongs at the end of the answer, not the prompt
+    while tokenized and tokenized[-1] == tokenizer.eos_token_id:
+        tokenized = tokenized[:-1]
 
     ### Convert to Tensor and Move to Device ###
     prompt_tokens = torch.tensor(tokenized).to(device)

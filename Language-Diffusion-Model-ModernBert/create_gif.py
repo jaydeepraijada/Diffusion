@@ -187,6 +187,9 @@ if __name__ == "__main__":
                                                     add_special_tokens=True,
                                                     add_generation_prompt=True)
         prompt_ids = tokenizer.encode(chat_str)
+        # Strip trailing EOS — it belongs at the end of the answer, not the prompt
+        while prompt_ids and prompt_ids[-1] == tokenizer.eos_token_id:
+            prompt_ids = prompt_ids[:-1]
         input_tokens = torch.full((1, args.seq_len), tokenizer.mask_token_id,
                                    dtype=torch.long, device=args.device)
         mask = torch.ones((1, args.seq_len), dtype=torch.bool, device=args.device)

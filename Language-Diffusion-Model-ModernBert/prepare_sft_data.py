@@ -95,31 +95,20 @@ def prepare_data(args):
         )
     
     def preprocess(example):
-        
-        instruction = example["instruction"]
-        input = example["input"]
-        output = example["output"]
+        instruction = example["system_prompt"] + " " + example["question"] if example["system_prompt"] else example["question"]
+        output = example["response"]
 
-        ### Instruction always ends with period, go ahead and remove it ###
-        ### and add in input if available ###
-        if len(input) > 0:
-            instruction = instruction.replace(".", "") + ": " + input
-        
-        # Format text using template
         tokenized = apply_chat_template(instruction, output)
-
         return {"input_ids": tokenized, "length": len(tokenized)}
-    
-    ### Remove All Columns that are not instruction, input and output ###
-    dataset = dataset.remove_columns(["text"])
 
     ### Train/Test Split Dataset ###
     dataset = dataset.train_test_split(test_size=args.test_split_pct, seed=args.dataset_split_seed)
-    
+
+    num_proc = args.num_workers if args.num_workers > 1 else None
     tokenized_data = dataset.map(
-        preprocess, 
-        num_proc=args.num_workers, 
-        remove_columns=["instruction", "input", "output"]
+        preprocess,
+        num_proc=num_proc,
+        remove_columns=["id", "system_prompt", "question", "response"]
     )
     
     def keep_within_context(example):
@@ -127,14 +116,14 @@ def prepare_data(args):
         return example["length"] <= context_length
     
     print("Number of Samples In Dataset:", len(tokenized_data["train"]))
-    tokenized_data = tokenized_data.filter(keep_within_context, num_proc=args.num_workers)
+    tokenized_data = tokenized_data.filter(keep_within_context, num_proc=num_proc)
     tokenized_data = tokenized_data.remove_columns("length")
     print("Number of Samples After Length Filter:", len(tokenized_data["train"]))
 
     def get_answer_mask(example):
 
         """
-        This function will return a mask for the answer portion of the prompt, 
+        This function will return a mask for the answer portion of the prompt,
         which will be used during training to only calculate loss on the answer portion.
         """
 
@@ -163,7 +152,7 @@ def prepare_data(args):
 
     tokenized_data = tokenized_data.map(
         get_answer_mask,
-        num_proc=args.num_workers
+        num_proc=num_proc
     )
 
     ### Save Data ###

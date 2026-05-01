@@ -172,13 +172,10 @@ if __name__ == "__main__":
         mask = torch.ones((1, args.seq_len), dtype=torch.bool, device=args.device)
     else:
         chat       = [{"role": "user", "content": args.prompt}]
-        prompt_ids = tokenizer.apply_chat_template(chat, tokenize=True,
+        chat_str   = tokenizer.apply_chat_template(chat, tokenize=False,
                                                     add_special_tokens=True,
                                                     add_generation_prompt=True)
-        if hasattr(prompt_ids, "ids"):
-            prompt_ids = prompt_ids.ids
-        elif isinstance(prompt_ids, dict):
-            prompt_ids = prompt_ids["input_ids"]
+        prompt_ids = tokenizer.encode(chat_str)
         input_tokens = torch.full((1, args.seq_len), tokenizer.mask_token_id,
                                    dtype=torch.long, device=args.device)
         mask = torch.ones((1, args.seq_len), dtype=torch.bool, device=args.device)

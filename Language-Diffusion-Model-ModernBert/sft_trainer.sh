@@ -11,7 +11,7 @@ accelerate launch --mixed_precision bf16 sft_trainer.py \
     --path_to_prepped_data "/workspace/data/sft" \
     --num_training_steps 10000 \
     --per_gpu_batch_size 128 \
-    --gradient_accumulation_steps 16 \
+    --gradient_accumulation_steps 32 \
     --learning_rate 1e-5 \
     --weight_decay 0.05 \
     --lr_scheduler_type cosine \

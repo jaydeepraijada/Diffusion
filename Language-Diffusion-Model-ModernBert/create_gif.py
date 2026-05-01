@@ -140,18 +140,20 @@ def run_and_collect_frames(input_tokens, mask, attention_mask,
     return frames, final_text
 
 
-def create_gif(frames, total_steps, output_path, fps=8):
+def create_gif(frames, total_steps, output_path, fps=8, end_pause_secs=3):
     images = [render_frame(text, step, total_steps) for step, text in frames]
     if not images:
         return
-    images[0].save(
+    pause_frames = [images[-1]] * int(end_pause_secs * fps)
+    all_images = images + pause_frames
+    all_images[0].save(
         output_path,
         save_all=True,
-        append_images=images[1:],
+        append_images=all_images[1:],
         duration=int(1000 / fps),
         loop=0,
     )
-    print(f"Saved GIF → {output_path}  ({len(images)} frames)")
+    print(f"Saved GIF → {output_path}  ({len(all_images)} frames)")
 
 
 if __name__ == "__main__":

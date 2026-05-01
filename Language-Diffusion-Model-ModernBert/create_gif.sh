@@ -11,10 +11,10 @@ python create_gif.py \
     --num_steps 128 \
     --strategy low_confidence \
     --frame_every 4 \
-    --fps 8 \
+    --fps 4 \
     --output inference_sft.gif
 
-# Unconditional with pretrain model (may produce better text)
+# Unconditional with pretrain model
 python create_gif.py \
     --safetensors_path "/workspace/experiments/LDM_pretrain_base/final_model/model.safetensors" \
     --hf_model_name "answerdotai/ModernBERT-base" \
@@ -22,5 +22,5 @@ python create_gif.py \
     --num_steps 128 \
     --strategy low_confidence \
     --frame_every 4 \
-    --fps 8 \
+    --fps 4 \
     --output inference_pretrain.gif

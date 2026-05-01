@@ -30,5 +30,3 @@ if __name__ == "__main__":
     loader = DataLoader(data, batch_size=4, collate_fn=SFTCollator())
     next(iter(loader))
 
-    python prepare_pretrain_data.py --test_split_pct 0.005 --context_length 1024 --path_to_data_store ./data/pretrain_test
-  --dataset_split_seed 42 --num_workers 1 --max_samples 100 --hf_model_name "answerdotai/ModernBERT-base"

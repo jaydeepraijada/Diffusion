@@ -197,7 +197,7 @@ if args.hf_push_repo:
 tokenizer = get_tokenizer(args.hf_model_name)
 
 ### Load Model ###
-model = ModernBertForMaskedLM.from_pretrained(args.hf_model_name)
+model = ModernBertForMaskedLM.from_pretrained(args.hf_model_name, torch_dtype=torch.bfloat16)
 model.resize_token_embeddings(len(tokenizer))
 state_dict = load_file(args.path_to_pretrained_checkpoint)
 model.load_state_dict(state_dict, strict=False)

@@ -26,10 +26,16 @@ This is the **base pretrained checkpoint** before SFT instruction tuning. For in
 | Base model | ModernBERT-base |
 | Parameters | ~150M |
 | Architecture | Masked Language Model (diffusion objective) |
-| Pretrain data | Project Gutenberg (~6.4M chunks, seq_len=1024) |
+| Pretrain data | Project Gutenberg (6,400,553 train chunks, seq_len=1024) |
 | Pretrain steps | 30,000 |
-| Final train loss | 2.92 |
-| Final val loss | 2.96 |
+| Effective batch size | 128 |
+| Learning rate | 5e-5 (cosine, 1500 warmup steps) |
+| Hardware | RTX 4090 24GB |
+| Training time | ~20 hours |
+| Initial train loss | 3.887 |
+| Initial val loss | 3.922 |
+| Final train loss | 2.917 |
+| Final val loss | 2.962 |
 
 ---
 

@@ -9,14 +9,15 @@ accelerate launch --mixed_precision bf16 sft_trainer.py \
     --hf_model_name "answerdotai/ModernBERT-base" \
     --path_to_pretrained_checkpoint "/workspace/experiments/LDM_pretrain_base/final_model/model.safetensors" \
     --path_to_prepped_data "/workspace/data/sft" \
-    --num_training_steps 30000 \
-    --per_gpu_batch_size 64 \
-    --gradient_accumulation_steps 1 \
+    --num_training_steps 10000 \
+    --per_gpu_batch_size 128 \
+    --gradient_accumulation_steps 16 \
     --learning_rate 1e-5 \
     --weight_decay 0.05 \
     --lr_scheduler_type cosine \
-    --num_warmup_steps 500 \
+    --num_warmup_steps 300 \
     --evaluation_interval 2500 \
-    --checkpoint_interval 10000 \
+    --checkpoint_interval 5000 \
     --num_workers 4 \
+    --hf_push_repo "YOUR_HF_USERNAME/ldm-modernbert-base-sft" \
     --log_wandb

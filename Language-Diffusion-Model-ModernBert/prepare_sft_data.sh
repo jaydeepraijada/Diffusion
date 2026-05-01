@@ -9,5 +9,5 @@ python prepare_sft_data.py \
     --path_to_data_store /workspace/data/sft \
     --huggingface_cache_dir /workspace/hf_cache \
     --dataset_split_seed 42 \
-    --num_workers 8 \
+    --num_workers 1 \
     --hf_model_name "answerdotai/ModernBERT-base"

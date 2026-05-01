@@ -49,6 +49,10 @@ def prepare_conditional_tokens_for_inference(seq_len, tokenizer, prompt, device=
         add_special_tokens=True,
         add_generation_prompt=True
     )
+    if hasattr(tokenized, "ids"):
+        tokenized = tokenized.ids
+    elif isinstance(tokenized, dict):
+        tokenized = tokenized["input_ids"]
 
     ### Convert to Tensor and Move to Device ###
     prompt_tokens = torch.tensor(tokenized).to(device)

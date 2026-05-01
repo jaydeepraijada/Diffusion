@@ -24,9 +24,10 @@ def SFTCollator(model_name="answerdotai/ModernBERT-base"):
                     is_answer = True
         return query_mask
 
-    def _collate_fn(batch):
+    def _collate_fn(batch, max_length=1024):
 
         raw_ids = [b["input_ids"]["input_ids"] if isinstance(b["input_ids"], dict) else b["input_ids"] for b in batch]
+        raw_ids = [ids[:max_length] for ids in raw_ids]
         inputs = [torch.tensor(ids) for ids in raw_ids]
         query_masks = [torch.tensor(_compute_query_mask(ids)) for ids in raw_ids]
 

@@ -99,6 +99,8 @@ def prepare_data(args):
         output = example["response"]
 
         tokenized = apply_chat_template(instruction, output)
+        if isinstance(tokenized, dict):
+            tokenized = tokenized["input_ids"]
         return {"input_ids": tokenized, "length": len(tokenized)}
 
     ### Train/Test Split Dataset ###

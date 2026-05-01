@@ -6,9 +6,9 @@ python create_gif.py \
     --safetensors_path "/workspace/experiments/LDM_sft_openorca/final_model/model.safetensors" \
     --hf_model_name "answerdotai/ModernBERT-base" \
     --prompt "What is artificial intelligence?" \
-    --seq_len 128 \
-    --num_steps 64 \
+    --seq_len 256 \
+    --num_steps 128 \
     --strategy low_confidence \
-    --frame_every 2 \
+    --frame_every 4 \
     --fps 8 \
     --output inference.gif

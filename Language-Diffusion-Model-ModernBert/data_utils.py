@@ -12,7 +12,7 @@ def SFTCollator(model_name="answerdotai/ModernBERT-base"):
 
     def _collate_fn(batch):
 
-        inputs = [torch.tensor(b["input_ids"]) for b in batch]
+        inputs = [torch.tensor(b["input_ids"]["input_ids"] if isinstance(b["input_ids"], dict) else b["input_ids"]) for b in batch]
         query_masks = [torch.tensor(b["query_mask"]) for b in batch]
 
         inputs = torch.nn.utils.rnn.pad_sequence(inputs, padding_value=eos_token, batch_first=True)
@@ -29,3 +29,6 @@ if __name__ == "__main__":
     data = load_from_disk("/mnt/datadrive/data/prepped_data/alpaca")["train"]
     loader = DataLoader(data, batch_size=4, collate_fn=SFTCollator())
     next(iter(loader))
+
+    python prepare_pretrain_data.py --test_split_pct 0.005 --context_length 1024 --path_to_data_store ./data/pretrain_test
+  --dataset_split_seed 42 --num_workers 1 --max_samples 100 --hf_model_name "answerdotai/ModernBERT-base"
